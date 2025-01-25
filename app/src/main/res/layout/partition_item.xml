@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content"
+	android:layout_width="match_parent">
+
+	<ImageView
+		android:layout_height="60dp"
+		android:padding="8dp"
+		android:layout_width="60dp"
+		android:src="@drawable/ic_launcher"
+		android:layout_centerVertical="true"
+		android:layout_margin="4dp"
+		android:id="@+id/partition_icon"/>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_centerVertical="true"
+		android:orientation="vertical"
+		android:layout_toRightOf="@id/partition_icon">
+
+		<RelativeLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="horizontal">
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_centerVertical="true"
+				android:singleLine="true"
+                android:layout_alignParentLeft="true"
+				android:id="@+id/partition_name"/>
+
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:clickable="false"
+                android:longClickable="false"
+                android:id="@+id/partition_selector"
+				android:layout_alignParentRight="true"/>
+
+		</RelativeLayout>
+
+		<RelativeLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="horizontal">
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:padding="4dp"
+				android:singleLine="true"
+				android:id="@+id/partition_size"/>
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:padding="4dp"
+				android:singleLine="true"
+				android:id="@+id/partition_status"
+				android:layout_alignParentRight="true"/>
+
+		</RelativeLayout>
+
+	</LinearLayout>
+
+</RelativeLayout>
+

@@ -1,0 +1,49 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="com.sdtech.rombackup.prefs_hide_unsupported_partitions"
+        android:summary="Don’t show the unsupported partitions.\nNote: the backup of these files are actually corrupted and can’t be restored."
+        android:defaultValue="true"
+        android:title="Hide unsupporred partitions" />
+
+    <CheckBoxPreference
+        android:key="com.sdtech.rombackup.prefs_auto_compress_backup"
+        android:title="Auto Compress Backup"
+        android:summary="automatically compress backed-up partition’s folder after backup completed" />
+    
+    <CheckBoxPreference
+        android:dependency="com.sdtech.rombackup.prefs_auto_compress_backup"
+        android:key="com.sdtech.rombackup.prefs_tar_gz_format"
+        android:title="Compress as tar.gz format"
+        android:defaultValue="true"
+        android:summary="This make the compressed file to be more smaller than as zip format" />
+    
+    <CheckBoxPreference
+        android:dependency="com.sdtech.rombackup.prefs_auto_compress_backup"
+        android:key="com.sdtech.rombackup.prefs_delete_folder_after_compress"
+        android:title="Delete backup folder"
+        android:defaultValue="true"
+        android:summary="Delete backed-up files after compressed to free up space" />
+
+
+    <SwitchPreference
+        android:key="com.sdtech.rombackup.prefs_show_partition_size"
+        android:title="Partitions Size"
+        android:defaultValue="true"
+        android:summary="try to find and show the size of partitions if possible" />
+
+    <CheckBoxPreference
+        android:dependency="com.sdtech.rombackup.prefs_show_partition_size"
+        android:key="com.sdtech.rombackup.prefs_human_readable_partition_size"
+        android:title="Format Partitions Size"
+        android:defaultValue="true"
+        android:summary="show partitions size as KB,MB,GB etc. instead of bytes" />
+
+    <Preference
+        android:key="com.sdtech.rombackup.prefs_bytes_per_kb"
+        android:dependency="com.sdtech.rombackup.prefs_human_readable_partition_size"
+        android:title="Bytes per KiloByte (KB)"
+        android:summary="select bytes per kilobyte (KB).\ncurrent: 1024B = 1KB" />
+
+</PreferenceScreen>
