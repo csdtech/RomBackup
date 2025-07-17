@@ -1,9 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-     xmlns:android="http://schemas.android.com/apk/res/android"
-     android:layout_height="match_parent"
-     android:layout_width="match_parent"
-     android:orientation="vertical">
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:orientation="vertical">
 
-    
+	<ScrollView
+		android:layout_height="match_parent"
+		android:layout_width="match_parent">
+
+		<LinearLayout
+			android:gravity="center"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:orientation="vertical">
+
+			<ImageView
+				android:src="@drawable/ic_rombackup_frame"
+				android:layout_width="match_parent"
+				android:maxHeight="256dp"
+				android:layout_height="wrap_content"
+				android:scaleType="centerCrop"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="ROM Backup v2.1"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:textStyle="bold|italic|normal"
+				android:padding="10dp"
+				android:singleLine="true"
+				android:gravity="center"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:padding="8dp"
+				android:id="@+id/app_description"/>
+
+		</LinearLayout>
+
+	</ScrollView>
+
 </LinearLayout>
+

@@ -45,7 +45,9 @@
             android:windowSoftInputMode="adjustPan|stateHidden"
             android:launchMode="singleTop"
             android:configChanges="screenSize|colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|orientation|navigation|screenLayout|uiMode"/>
-        
+          <activity 
+            android:process=":crashed"
+            android:name=".common.CrashActivity"/>
     </application>
 
 </manifest>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="size_units">
+        <item> KiB (1KB = 1024B)</item>
+        <item> KB (1KB = 1000B)</item>
+    </array>
+    <array name="size_units_values">
+        <item>KiB</item>
+        <item>KB</item>
+    </array>
+    
+</resources>

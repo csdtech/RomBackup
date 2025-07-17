@@ -5,12 +5,11 @@
 	android:layout_width="match_parent">
 
 	<ImageView
-		android:layout_height="60dp"
-		android:padding="8dp"
-		android:layout_width="60dp"
-		android:src="@drawable/ic_launcher"
+		android:layout_height="72dp"
+		android:padding="4dp"
+		android:layout_width="72dp"
+		android:src="@drawable/ic_android"
 		android:layout_centerVertical="true"
-		android:layout_margin="4dp"
 		android:id="@+id/partition_icon"/>
 
 	<LinearLayout

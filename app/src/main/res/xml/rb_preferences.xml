@@ -2,22 +2,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
-        android:key="com.sdtech.rombackup.prefs_hide_unsupported_partitions"
-        android:summary="Don’t show the unsupported partitions.\nNote: the backup of these files are actually corrupted and can’t be restored."
-        android:defaultValue="true"
-        android:title="Hide unsupporred partitions" />
+        android:key="com.sdtech.rombackup.prefs_show_mounted_partitions"
+        android:summary="Show the mounted partitions.\nNote: the backups of mounted partitions are actually corrupted and can’t be restored."
+        android:defaultValue="false"
+        android:title="Show mounted partitions" />
 
+    <CheckBoxPreference
+        android:key="com.sdtech.rombackup.prefs_remount_ro"
+        android:summary="Remount the mounted partitions Read-Only before backup to avoid data corruption risks."
+        android:defaultValue="false"
+        android:dependency="com.sdtech.rombackup.prefs_show_mounted_partitions"
+        android:title="Remount partitions RO" />
+        
     <CheckBoxPreference
         android:key="com.sdtech.rombackup.prefs_auto_compress_backup"
         android:title="Auto Compress Backup"
-        android:summary="automatically compress backed-up partition’s folder after backup completed" />
+        android:defaultValue="false"
+        android:summary="Automatically compress backed-up partition’s folder after backup completed" />
     
     <CheckBoxPreference
         android:dependency="com.sdtech.rombackup.prefs_auto_compress_backup"
         android:key="com.sdtech.rombackup.prefs_tar_gz_format"
         android:title="Compress as tar.gz format"
-        android:defaultValue="true"
-        android:summary="This make the compressed file to be more smaller than as zip format" />
+        android:defaultValue="false"
+        android:summary="Compresse the backed-up partitions using tar instead of zip" />
     
     <CheckBoxPreference
         android:dependency="com.sdtech.rombackup.prefs_auto_compress_backup"
@@ -40,10 +48,13 @@
         android:defaultValue="true"
         android:summary="show partitions size as KB,MB,GB etc. instead of bytes" />
 
-    <Preference
-        android:key="com.sdtech.rombackup.prefs_bytes_per_kb"
+    <ListPreference
+        android:key="com.sdtech.rombackup.prefs_size_unit"
         android:dependency="com.sdtech.rombackup.prefs_human_readable_partition_size"
-        android:title="Bytes per KiloByte (KB)"
-        android:summary="select bytes per kilobyte (KB).\ncurrent: 1024B = 1KB" />
+        android:title="Partitions size unit"
+        android:entries="@array/size_units"
+        android:defaultValue="KiB"
+        android:entryValues="@array/size_units_values"
+        android:summary="select unit to measure partitions size with.\ncurrent: %s" />
 
 </PreferenceScreen>

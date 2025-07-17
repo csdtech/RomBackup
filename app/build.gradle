@@ -5,7 +5,7 @@ plugins {
 android {
     namespace 'com.sdtech.rombackup'
     compileSdk 34
-    buildToolsVersion "35.0.0"
+    buildToolsVersion "34.0.4"
     defaultConfig {
         applicationId "com.sdtech.rombackup"
         minSdkVersion 9
@@ -15,8 +15,11 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+        }
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

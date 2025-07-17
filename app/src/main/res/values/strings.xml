@@ -2,5 +2,5 @@
 <resources>
     <string name="menu_settings">Settings</string>
     <string name="menu_about">About App</string>
-    <string name="app_name">Rom Backup</string>
+    <string name="app_name">ROM Backup</string>
 </resources>

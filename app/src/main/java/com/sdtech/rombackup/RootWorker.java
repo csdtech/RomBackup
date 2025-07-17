@@ -8,199 +8,160 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class RootWorker {
-    
+
     private static boolean rootFound = false;
     private static boolean rootGranted = false;
 
-    public static boolean rootFound() {
-        try {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            rootFound = false;
-            //paths for searching su binary.
-            String[] paths = "/debug_ramdisk/su /sbin/su /system/sbin/su /system/bin/su /system/xbin/su /su/bin/su /magisk/.core/bin/su".split(" ");
+    public static boolean rootFound() throws IOException {
+        rootFound = false;
+        //paths for searching su binary.
+        String[] paths = "/debug_ramdisk/su /sbin/su /system/sbin/su /system/bin/su /system/xbin/su /su/bin/su /magisk/.core/bin/su".split(" ");
 
-            Future<Boolean> result = executor.submit(() -> {
-                for (String path : paths) {
-                    try {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("ls " + path).getInputStream()));
-                        String line = reader.readLine();
-                        if (line != null && line.startsWith(path)) {
-                            rootFound = true;
-                        }
-                        reader.close();
-                    } catch (Exception err) {
-
-                    }
-                }
-
-                /** trying second method */
-                if (!rootFound) {
-                    for (String path : paths) {
-                        if (new File(path).exists()) {
-                            rootFound = true;
-                        }
-                    }
-                }
-            }, true);
-            if (result.get()) {
-                executor.shutdown();
+        for(String path : paths) {              
+            BufferedReader reader = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("ls " + path).getInputStream()));
+            String line = reader.readLine();
+            if(line != null && line.startsWith(path)) {
+                rootFound = true;
             }
-
-            return rootFound;
-        } catch (Exception e) {
-            return false;
+            reader.close();
         }
+        /** trying second method */
+        if(!rootFound) {
+            for(String path : paths) {
+                if(new File(path).exists()) {
+                    rootFound = true;
+                }
+            }
+        }
+        return rootFound;
     }
 
-    public static boolean rootGranted() {
-        if (!rootFound()) {
+    public static boolean rootGranted() throws IOException {
+        if(!rootFound()) {
             return false;
         }
-        try {
-            rootGranted = false;
-            final List<String> output = RootShell.command("id").getOutput();
-            for (String out : output) {
-                if (out.contains("uid=0")) {
+        rootGranted = false;
+        final List<String> output = RootShell.command("id").getOutput();
+        for(String out : output) {
+            if(out.contains("uid=0")) {
+                rootGranted = true;
+            }
+        }
+        // request root permission
+        if(!rootGranted) {
+            closeShell();
+            RootShell shell =  RootShell.command("su", "-c", "/system/bin/sh");
+            shell.addCommand("echo ROOTGRANTED");
+            List<String> shelloutput = shell.getOutput();
+            for(String out : shelloutput) {
+                if(out.matches("ROOTGRANTED")) {
                     rootGranted = true;
                 }
             }
-            // request root permission
-            if (!rootGranted) {
-                try {
-                    closeShell();
-                    RootShell shell =  RootShell.command("su","-c","/system/bin/sh");
-                    shell.addCommand("echo ROOTGRANTED");
-                    List<String> shelloutput = shell.getOutput();
-                    for(String out : shelloutput) {
-                    	if(out.matches("ROOTGRANTED")) {
-                    		rootGranted=true;
-                    	}
-                    }
-                } catch (Exception ignored) {}
-            }
-            return rootGranted;
-        } catch (Exception e) {
-            return false;
         }
+        return rootGranted;
     }
-    
-    public static RootShell command(String... commands){
+
+    public static RootShell command(String... commands) throws IOException {
         return RootShell.command(commands);
     }
-    
-    public static void closeShell() {
+
+    public static void closeShell() throws IOException {
     	RootShell.closeShell();
     }
-    
+
     public static class RootShell {
-        
+        private Process mProcess;
         private OutputStream cmdOutput;
         private InputStream  cmdInput;
         private InputStream  cmdError;
-        
+
         private static RootShell mShell;
-        
-        private RootShell(Process prs){
+
+        private RootShell(Process prs) {
+            mProcess  = prs; 
             cmdOutput = prs.getOutputStream();
             cmdInput  = prs.getInputStream();
             cmdError  = prs.getErrorStream();
         }
-        
-        private void wipeStream(InputStream in) {
-        	try {
-                int available = 0;
-                while ((available=in.available()) != 0){
-                    in.skip(available);
-                }
-            } catch (IOException ignored) {}
+
+        private void wipeStream(InputStream in) throws IOException {
+            int available;
+            while((available = in.available()) != 0) {
+                in.skip(available);
+            }
         }
-        
-        public static RootShell command(String... commands){
+
+        public static RootShell command(String... commands) throws IOException {
             if(mShell == null) {
-            	try {
-            		Process prs = new ProcessBuilder(commands).start();
-                    mShell = new RootShell(prs);
-            	} catch(Exception ignored) {}
-            }else{
+                Process prs = new ProcessBuilder(commands).start();
+                mShell = new RootShell(prs);
+            } else {
                 mShell.addCommand(commands);
             }
             return mShell;
         }
         
-        public void addCommand(String... commands) {
-        	try {
-        		if(cmdOutput==null){
-                    command("/system/bin/sh");
-                }
-                wipeStream(cmdInput);
-                wipeStream(cmdError);
-                for(String cmd : commands){
-                    cmdOutput.write((cmd+"\n").getBytes());
-                    cmdOutput.flush();
-                    cmdOutput.write("echo ENDOFCOMMAND\n".getBytes());
-                    cmdOutput.flush();
-                }
-        	} catch(Exception ignored) {}
+        public void waitToFininsh() {
+            try {
+                    getOutput();
+                } catch(IOException ignored) {}
         }
         
-        private void close() {
-        	if(mShell!=null){
-                try {
-                    mShell=null;
-                	cmdOutput.close();
-                    cmdInput.close();
-                    cmdError.close();
-                } catch(Exception ignored) {}
+        public void addCommand(String... commands) throws IOException {
+            if(cmdOutput == null) {
+                command("/system/bin/sh");
+            }
+            wipeStream(cmdInput);
+            wipeStream(cmdError);
+            for(String cmd : commands) {
+                cmdOutput.write((cmd + " \n").getBytes());
+                cmdOutput.flush();
+            }
+            cmdOutput.write("echo ENDOFCOMMAND\n".getBytes());
+            cmdOutput.flush();
+        }
+
+        private void close() throws IOException {
+        	if(mShell != null) {
+                mShell = null;
+                mProcess.destroy();
+                cmdOutput.close();
+                cmdInput.close();
+                cmdError.close();
             }
         }
-        
-        private static void closeShell() {
+
+        private static void closeShell() throws IOException {
         	mShell.close();
         }
-        
-        public List<String> getOutput() throws Exception{
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
-            final List<String> output = new ArrayList<>();
-            Future outResult = executor.submit(()->{
-                try {
-                	BufferedReader outputReader = new BufferedReader(new InputStreamReader(cmdInput));
-                    String line;
-                    while((line = outputReader.readLine()) != null) {
-                        if(!line.matches("ENDOFCOMMAND")) {
-                        	output.add(line);
-                        } else {
-                            break;
-                        }
-                    }
-                } catch(Exception ignored) {}
-            });
-            outResult.get();
-            executor.shutdown();
+
+        public List<String> getOutput() throws IOException {
+            List<String> output = new ArrayList<>();
+            BufferedReader outputReader = new BufferedReader(new InputStreamReader(cmdInput));
+            String line;
+            while((line = outputReader.readLine()) != null) {
+                if(!line.matches("ENDOFCOMMAND")) {
+                    output.add(line);
+                } else {
+                    break;
+                }
+            }
         	return output;
         }
-        
-        public List<String> getError() throws Exception{
+
+        public List<String> getError() throws IOException {
             if(cmdError == null) {
-            	return new ArrayList<>();
+            	return new ArrayList<String>();
             }
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            final List<String> errors = new ArrayList<>();
-            Future errResult = executor.submit(()->{
-                try {
-                	BufferedReader errorReader = new BufferedReader(new InputStreamReader(cmdError));
-                    String line;
-                    while((line=errorReader.readLine()) != null) {
-                        errors.add(line);
-                    }
-                } catch(Exception ignored) {}
-            });
-            errResult.get();
-            executor.shutdown();
+            List<String> errors = new ArrayList<>();
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(cmdError));
+            String line;
+            while((line = errorReader.readLine()) != null) {
+                errors.add(line);
+            }
         	return errors;
         }
     }
